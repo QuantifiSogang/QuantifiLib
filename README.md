@@ -12,33 +12,33 @@ Whether you're building event-driven strategies, training machine learning model
 <pre lang="markdown">
 
 quantifilib/
-└── data/
-    ├── data_loader/
-    │   ├── yfinance_loader.py
-    │   ├── fred_loader.py
-    │   └── naver_loader.py
-    └── stock_universe/
-    │   └── wikipedia.py
-    ├── features/
-    │   ├── bar_sampling/
-    │   │   ├── bar_feature.py
-    │   │   ├── base_bars.py
-    │   │   ├── core.py
-    │   │   ├── imbalance_data_structures.py
-    │   │   ├── microstructure.py
-    │   │   ├── run_data_structures.py
-    │   │   ├── standard_data_structures.py
-    │   │   └── time_data_structures.py
-    ├── metrics/
-    │   ├── liquidity/
-    │   │   ├── corwin_schultz.py
-    │   │   ├── lambda.py
-    │   │   ├── pin.py
-    │   │   └── roll_models.py
-    │   ├── risk/
-    │   │   ├── market.py
-    │   │   └── strategy.py
-    ├── utils/
-    │   └── fast_ewma.py
+├── data/
+│   ├── data_loader/
+│   │   ├── yfinance_loader.py
+│   │   ├── fred_loader.py
+│   │   └── naver_loader.py
+│   └── stock_universe/
+│       └── wikipedia.py
+├── features/
+│   ├── bar_sampling/
+│   │   ├── bar_feature.py
+│   │   ├── base_bars.py
+│   │   ├── core.py
+│   │   ├── imbalance_data_structures.py
+│   │   ├── microstructure.py
+│   │   ├── run_data_structures.py
+│   │   ├── standard_data_structures.py
+│   │   └── time_data_structures.py
+├── metrics/
+│   ├── liquidity/
+│   │   ├── corwin_schultz.py
+│   │   ├── lambda.py
+│   │   ├── pin.py
+│   │   └── roll_models.py
+│   └── risk/
+│       ├── market.py
+│       └── strategy.py
+└── utils/
+    └── fast_ewma.py
     
 </pre>
