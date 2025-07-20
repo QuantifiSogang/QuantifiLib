@@ -36,9 +36,22 @@ quantifilib/
 │   │   ├── pin.py
 │   │   └── roll_models.py
 │   └── risk/
-│       ├── market.py
-│       └── strategy.py
+│   │   ├── market.py
+│   │   └── strategy.py
+├── strategy/   
+│   ├── fundamental_based/
+│   ├── ml_based/
+│   │   └── suppport_vector_machine.py
+│   ├── price_based/
+│   │   ├── technical.py
+│   │   └── triple_barrier.py
+│   ├── statistical_based/
+│   │   └── trend_search.py
+│   └── base_label.py
 └── utils/
+    ├── multiprocess/
+    │   ├── parts.py
+    │   └── process_job.py
     └── fast_ewma.py
     
 </pre>
