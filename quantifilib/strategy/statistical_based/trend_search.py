@@ -7,8 +7,9 @@ class TrendSearchLabeling(BaseLabel):
     """
     Labeling with Trend Search Method using statsmodels
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data : pd.DataFrame, price_col:str = 'Close'):
+        super().__init__(data = data)
+        self.price_col = price_col
 
     @staticmethod
     def _linear_trend_t_values(close : np.array) :
@@ -32,7 +33,7 @@ class TrendSearchLabeling(BaseLabel):
             if iloc0 + max(horizons) > self.data.shape[0] : continue
             for horizon in horizons :
                 dt1 = self.data.index[iloc0 + horizon -1]
-                df1 = self.data.loc[dt0 : dt1]
+                df1 = self.data.loc[dt0 : dt1, self.price_col]
                 df0.loc[dt1] = self._linear_trend_t_values(df1.values)
             dt1 = df0.replace([-np.inf, np.inf, np.nan], 0).abs().idxmax()
             out.loc[dt0, ['t1','tVal','bin']] = df0.index[-1], df0[dt1], np.sign(df0[dt1])

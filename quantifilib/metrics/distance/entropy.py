@@ -15,8 +15,8 @@ class Entropy(BaseDistance) :
     Includes Jensen-Shannon divergence, variation of information, and mutual information
     as non-linear and information-theoretic measures of distance or dependence.
     """
-    def __init__(self) :
-        super().__init__()
+    def __init__(self, data:pd.DataFrame, verbose : bool = True) :
+        super().__init__(data = data, verbose = verbose)
 
     @staticmethod
     def num_bins(n_obs, corr=None):

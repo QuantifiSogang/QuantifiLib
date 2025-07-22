@@ -8,8 +8,8 @@ class StatisticalDistance(BaseDistance) :
     """
     distance matrix using statistical metrics
     """
-    def __init__(self) :
-        super().__init__()
+    def __init__(self, data:pd.DataFrame, verbose:bool = True) :
+        super().__init__(data = data, verbose = verbose)
 
     @staticmethod
     def _corr_dist_long_only(x, y):
