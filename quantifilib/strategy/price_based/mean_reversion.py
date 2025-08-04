@@ -4,6 +4,16 @@ from typing import Union
 from quantifilib.strategy.base_label import BaseLabel
 
 class BollingerBandLabeling(BaseLabel):
+    """
+    Labeling class based on Bollinger Bands mean-reversion strategy.
+
+    This class generates signals when the price crosses the upper or lower bands.
+
+    Signals:
+        +1: Price closes below lower band and turns upward (buy)
+        -1: Price closes above upper band and turns downward (sell)
+         0: No signal
+    """
     def __init__(
             self,
             data: pd.DataFrame,
@@ -77,6 +87,16 @@ class BollingerBandLabeling(BaseLabel):
         return labels
 
 class RSILabeling(BaseLabel):
+    """
+    Labeling class based on Relative Strength Index (RSI) mean-reversion strategy.
+
+    This class generates signals based on RSI crossing predefined thresholds.
+
+    Signals:
+        +1: RSI crosses below the oversold threshold (e.g., 30) and turns upward (buy)
+        -1: RSI crosses above the overbought threshold (e.g., 70) and turns downward (sell)
+         0: No signal
+    """
     def __init__(
         self,
         data: pd.DataFrame,
@@ -134,6 +154,17 @@ class RSILabeling(BaseLabel):
         return labels
 
 class StochasticOscillatorLabeling(BaseLabel):
+    """
+    Labeling class based on Stochastic Oscillator (%K and %D) mean-reversion strategy.
+
+    This class generates signals when the %K line crosses the %D line
+    within overbought or oversold zones.
+
+    Signals:
+        +1: %K crosses above %D in oversold zone (buy)
+        -1: %K crosses below %D in overbought zone (sell)
+         0: No signal
+    """
     def __init__(
         self,
         data: pd.DataFrame,
@@ -186,3 +217,49 @@ class StochasticOscillatorLabeling(BaseLabel):
         labels.name = 'bins'
 
         return labels
+
+class DeMarkLabeling(BaseLabel):
+    """
+    Labeling class based on DeMark Sequential Setup.
+
+    This class detects n-bar setup exhaustion signals using
+    Tom DeMark's Sequential Setup logic.
+
+    Signals:
+        +1: n-bar bullish setup (sell signal, trend exhaustion)
+        -1: n-bar bearish setup (buy signal, trend exhaustion)
+         0: No setup completed
+    """
+    def __init__(self, data: pd.DataFrame, setup_bars: int = 9, lookback_shift: int = 4) -> None:
+        super().__init__(data=data)
+        self.setup_bars = setup_bars
+        self.lookback_shift = lookback_shift
+
+    def get_labels(self) -> Union[pd.Series, pd.DataFrame]:
+        """
+        Generate buy/sell signals based on n-bar setup exhaustion.
+
+        Returns
+        -------
+        labels : pd.Series
+            Series with values {-1, 0, +1}
+        """
+        close = self.data['Close']
+
+        # Price compared to 'lookback_shift' bars earlier
+        price_diff = close - close.shift(self.lookback_shift)
+
+        # Setup direction: +1 bullish, -1 bearish, 0 neutral
+        condition = price_diff.apply(lambda x: 1 if x > 0 else -1 if x < 0 else 0)
+
+        # Count consecutive same-sign conditions
+        setup_counter = (condition != condition.shift()).cumsum()
+        grouped = condition.groupby(setup_counter)
+        counts = grouped.cumcount() + 1
+        streak = grouped.transform('count')
+
+        # Only label at the N-th bar of a valid streak
+        signal = ((counts == self.setup_bars) & (streak >= self.setup_bars)) * condition
+        signal.name = 'bins'
+
+        return signal
