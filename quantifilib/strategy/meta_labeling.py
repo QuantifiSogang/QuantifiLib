@@ -41,7 +41,12 @@ class MetaLabeling:
         )
         return barrier
 
-    def get_meta_label(self, barrier: Optional[pd.Series] = None, barrier_days: int = 5) -> pd.DataFrame:
+    def get_meta_label(
+        self,
+        barrier: Optional[pd.Series] = None,
+        barrier_days: int = 5,
+        target_return: float = 0.0
+    ) -> pd.DataFrame:
         """
         Generate meta labels and realized returns at vertical barrier horizon.
 
@@ -51,11 +56,13 @@ class MetaLabeling:
             Series of timestamps indicating when to evaluate each signal. If None, will be computed.
         barrier_days : int
             If barrier is None, this value determines the days to look ahead for the barrier.
+        target_return : float
+            Minimum absolute return required for a correct prediction to be considered valid.
 
         Returns
         -------
         meta : pd.DataFrame
-            Columns: ['bins', 'meta_label', 'return']
+            Columns: ['bins', 'meta_label', 'actual_ret']
         """
         signal = self.signal.dropna()
 
@@ -82,8 +89,10 @@ class MetaLabeling:
                 meta_label.append(None)
                 realized_return.append(None)
             else:
-                correct = int((ret > 0 and pred == 1) or (ret < 0 and pred == -1))
-                meta_label.append(correct)
+                # Check if prediction direction is correct AND return exceeds threshold
+                direction_correct = (ret > 0 and pred == 1) or (ret < 0 and pred == -1)
+                sufficient_return = abs(ret) >= target_return
+                meta_label.append(int(direction_correct and sufficient_return))
                 realized_return.append(ret)
 
         # Compile results
