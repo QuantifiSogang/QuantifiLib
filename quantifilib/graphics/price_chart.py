@@ -66,3 +66,52 @@ def plot_candle_chart(
 
     plt.tight_layout()
     return fig, ax1 if not volume_chart else (fig, (ax1, ax2))
+
+def plot_seasonal_price(
+        data: pd.DataFrame,
+        price_col: str = "Close",
+        years: list = None,
+        base_year: int = None
+    ) -> None:
+    """
+    Create a seasonal plot comparing multiple years on the same chart.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        DataFrame with DateTimeIndex and a price column.
+    price_col : str
+        Name of the price column.
+    years : list
+        List of years to include. If None, will use the latest 3 years in the data.
+    base_year : int
+        Year to use as reference (index alignment). If None, uses the earliest year in `years`.
+    """
+    # Ensure datetime index
+    data = data.copy()
+    data.index = pd.to_datetime(data.index)
+
+    # Default years selection
+    if years is None:
+        years = sorted(data.index.year.unique())[-3:]
+
+    if base_year is None:
+        base_year = min(years)
+
+    # Loop through each year
+    for year in years:
+        year_data = data[data.index.year == year]
+        year_data = year_data.copy()
+        year_data["day_of_year"] = year_data.index.dayofyear
+
+        # Align to base_year's day count
+        plt.plot(
+            year_data["day_of_year"],
+            year_data[price_col]/year_data[price_col].iloc[0],
+            label=str(year)
+        )
+
+    plt.xlabel("Day of Year")
+    plt.ylabel("Cumulative Returns")
+    plt.legend()
+    plt.show()
